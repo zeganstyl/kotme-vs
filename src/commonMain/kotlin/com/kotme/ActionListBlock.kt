@@ -24,7 +24,7 @@ class ActionListBlock: ActionBlockAdapter() {
         background = SKIN.listBlockBackground
         content.align = Align.topLeft
 
-        title.textProvider = { actionList.context?.name ?: "Action List" }
+        title.textProvider = { actionList.context?.name ?: "Список" }
 
         currentSocket.onDropped = {
             blocks.add(it)
@@ -65,12 +65,17 @@ class ActionListBlock: ActionBlockAdapter() {
         }
 
         add(HBox {
-            add(parallelButton).width(20f).padRight(5f)
+            if (parallelActionsEnabled) add(parallelButton).width(20f).padRight(5f)
             add(title).growX().padRight(5f)
-            add(contextChooseButton).width(20f)
+            if (chooseEnabled) add(contextChooseButton).width(20f)
         }).growX().pad(5f).newRow()
 
         add(content).growX().setFillY().padLeft(20f).newRow()
         add(currentSocket).grow().newRow()
+    }
+
+    companion object {
+        var chooseEnabled = false
+        var parallelActionsEnabled = false
     }
 }

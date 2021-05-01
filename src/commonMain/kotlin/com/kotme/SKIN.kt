@@ -1,13 +1,12 @@
 package com.kotme
 
 import app.thelema.data.DATA
+import app.thelema.fs.FS
 import app.thelema.font.BitmapFont
 import app.thelema.g2d.NinePatch
 import app.thelema.g2d.Sprite
 import app.thelema.g2d.TextureRegion
-import app.thelema.gl.GL
-import app.thelema.gl.GL_RGBA
-import app.thelema.gl.GL_UNSIGNED_BYTE
+import app.thelema.gl.*
 import app.thelema.img.Texture2D
 import app.thelema.math.Vec4
 import app.thelema.res.RES
@@ -15,6 +14,10 @@ import app.thelema.ui.*
 import app.thelema.utils.Color
 
 object SKIN {
+    val kotmeTitleFont = RES.loadTyped<BitmapFont>("pink/5.fnt")
+
+    val plainFont = RES.loadTyped<BitmapFont>("pink/5.fnt")
+
     val whiteTexture = Texture2D(0)
     val windowTexture = Texture2D(0)
     val listBlockTexture = Texture2D(0)
@@ -28,6 +31,19 @@ object SKIN {
     val splitColor = Vec4(0.2f, 0.2f, 0.2f, 0.8f)
     val lineColor = Vec4(0.3f, 0.3f, 0.3f, 1f)
 
+    val bg = Texture2D(0)
+
+    val label = LabelStyle(plainFont)
+
+    val kotmeTitleLabel = LabelStyle(kotmeTitleFont)
+
+    val plainButton = TextButtonStyle().apply {
+        font = plainFont
+        downFontColor = Color.CYAN
+    }
+
+    val cell = Texture2D(0)
+
     init {
         setGreenTheme()
     }
@@ -36,7 +52,7 @@ object SKIN {
         setupTexture5x5(
             windowTexture,
             corner = 0xAA000000.toInt(),
-            gradient = Color.rgba8888(overColor),
+            gradient = 0x00FF00FF.toInt(),
             vEdge = 0xEE000000.toInt(),
             middle = 0xFFFFFFFF.toInt(),
             field = 0xEE0000FF.toInt()
@@ -47,10 +63,10 @@ object SKIN {
         setupTexture5x52(
             listBlockTexture,
             corner = 0xAA000000.toInt(),
-            gradient = Color.rgba8888(overColor),
+            gradient = 0x55FF8800.toInt(),
             vEdge = 0x00000000,
             middle = Color.rgba8888(Color.WHITE),
-            field = 0xEE000000.toInt()
+            field = 0x00000000.toInt()
         )
     }
 
@@ -132,7 +148,7 @@ object SKIN {
                 middle, field, field, field,
                 gradient, field, field, field,
                 gradient, field, field, field,
-                vEdge, vEdge, vEdge, vEdge
+                middle, vEdge, vEdge, vEdge
             )
             rewind()
         }
@@ -220,8 +236,6 @@ object SKIN {
         font = BitmapFont.default()
     }
 
-    val label = LabelStyle()
-
     val windowBackground = NinePatchDrawable(NinePatch(windowTexture, 0, 0, 1, 1))
 
     val listBlockBackground = NinePatchDrawable(NinePatch(listBlockTexture, 2, 0, 0, 0))
@@ -293,6 +307,8 @@ object SKIN {
         this.background = windowBackground
     }
 
+    val bgImage = SpriteDrawable(Sprite(bg))
+
     fun init() {
         val bg2 = TextureRegion(whiteTexture)
         listOver.sprite.setRegion(bg2)
@@ -301,5 +317,8 @@ object SKIN {
         listSelected.sprite.color = Vec4(selectedColor).apply { w = 0.5f }
 
         whiteTexture.initOnePixelTexture(1f, 1f, 1f, 1f)
+
+        bg.load("bg.jpg")
+        cell.load("cell.png", GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR)
     }
 }

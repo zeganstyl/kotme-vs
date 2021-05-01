@@ -6,7 +6,7 @@ import app.thelema.ecs.IEntityComponent
 import app.thelema.ui.*
 
 abstract class ActionBlockAdapter: Table(), IComponentBlock {
-    val title = Label("")
+    val title = Text("")
 
     abstract val action: IAction
 

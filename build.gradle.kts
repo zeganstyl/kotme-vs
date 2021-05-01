@@ -1,12 +1,11 @@
 plugins {
-    kotlin("multiplatform") version "1.4.31"
+    kotlin("multiplatform") version "1.5.0"
     //id("com.android.application")
 }
 
 group = "com.kotme"
 
 repositories {
-    jcenter()
     mavenCentral()
     mavenLocal()
     google()

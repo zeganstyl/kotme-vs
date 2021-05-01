@@ -64,12 +64,12 @@ class EntityTreeNode(val entity: IEntity): TreeNode(Label().apply { textProvider
         entity.forEachComponent { component ->
             for (i in filterComponentNameTemplates.indices) {
                 if (filterMatch) {
-                    if (component.componentTypeName.contains(filterComponentNameTemplates[i])) {
+                    if (component.componentName.contains(filterComponentNameTemplates[i])) {
                         contains = true
                         return@forEachComponent
                     }
                 } else {
-                    if (toLower(component.componentTypeName).contains(toLower(filterComponentNameTemplates[i]))) {
+                    if (toLower(component.componentName).contains(toLower(filterComponentNameTemplates[i]))) {
                         contains = true
                         return@forEachComponent
                     }

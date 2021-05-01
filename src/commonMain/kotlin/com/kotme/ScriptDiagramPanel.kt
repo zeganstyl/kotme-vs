@@ -3,6 +3,7 @@ package com.kotme
 import app.thelema.action.ActionList
 import app.thelema.ecs.ECS
 import app.thelema.ecs.IEntity
+import app.thelema.ui.Align
 import app.thelema.ui.ScrollPane
 import app.thelema.ui.Table
 import app.thelema.ui.Touchable
@@ -18,6 +19,8 @@ class ScriptDiagramPanel(val visualScriptPanel: VisualScriptPanel): Table() {
     init {
         scroll.style.background = null
 
+        root.align = Align.top
+
         touchable = Touchable.Enabled
         scroll.touchable = Touchable.ChildrenOnly
         add(scroll).grow()
@@ -30,7 +33,7 @@ class ScriptDiagramPanel(val visualScriptPanel: VisualScriptPanel): Table() {
             block.actionList = list
             rootBlock = block
             map[list.entity] = block
-            root.add(block)
+            root.add(block).growX()
         } else {
             root.clearChildren()
         }

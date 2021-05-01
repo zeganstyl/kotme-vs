@@ -5,6 +5,7 @@ import app.thelema.ui.Window
 
 class ActionBlock(val action: Action): Window(addCloseButton = false) {
     init {
-        titleLabel.textProvider = { action.proxy?.componentTypeName ?: "" }
+        titleLabel.style = SKIN.label
+        titleLabel.textProvider = { action.proxy?.componentName ?: "" }
     }
 }
