@@ -19,19 +19,20 @@ class VisualScriptPanel(): Table() {
 
         add(VBox {
             align = Align.top
-            add(Label("Блоки", SKIN.label)).pad(5f)
+            add(Label("Блоки")).pad(5f)
             add(templates).growX()
         }).growY()
 
         add(VBox {
-            add(Label("Скрипт", SKIN.label)).pad(5f)
-            add(diagram).grow()
+            background = SKIN.listBlockBackground
+            add(Label("Скрипт")).pad(5f)
+            add(diagram).grow().padRight(10f).padLeft(10f)
         }).grow()
 
         templates.defaults().pad(5f)
-        templates.add(ComponentBlockTemplate { StepForwardActionBlock() })
-        templates.add(ComponentBlockTemplate { RotateLeftActionBlock() })
-        templates.add(ComponentBlockTemplate { RotateRightActionBlock() })
+        templates.add(ComponentBlockTemplate(this) { StepForwardActionBlock() })
+        templates.add(ComponentBlockTemplate(this) { RotateLeftActionBlock() })
+        templates.add(ComponentBlockTemplate(this) { RotateRightActionBlock() })
     }
 
     fun execute() {

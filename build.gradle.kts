@@ -12,9 +12,25 @@ repositories {
 }
 
 kotlin {
-    jvm()
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+    }
 
-    //android()
+    js {
+        browser {
+            binaries.executable()
+        }
+    }
+
+//    android {
+//        compilations.all {
+//            kotlinOptions {
+//                jvmTarget = "1.8"
+//            }
+//        }
+//    }
 
     sourceSets {
         val commonMain by getting {
@@ -32,6 +48,24 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("app.thelema:thelema-engine-jvm:0.6.0")
+            }
+
+            val jvmJar by tasks.getting(Jar::class) {
+                doFirst {
+                    manifest {
+                        attributes(
+                            "Main-Class" to "com.kotme.MainKt"
+                        )
+                    }
+
+                    from(configurations.getByName("jvmRuntimeClasspath").map { if (it.isDirectory) it else zipTree(it) })
+                }
+            }
+        }
+
+        val jsMain by getting {
+            dependencies {
+                implementation("app.thelema:thelema-engine-js:0.6.0")
             }
         }
     }
@@ -51,5 +85,9 @@ kotlin {
 //        getByName("release") {
 //            isMinifyEnabled = false
 //        }
+//    }
+//    compileOptions {
+//        sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+//        targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
 //    }
 //}

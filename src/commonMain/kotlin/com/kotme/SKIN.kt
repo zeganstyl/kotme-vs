@@ -16,7 +16,9 @@ import app.thelema.utils.Color
 object SKIN {
     val kotmeTitleFont = RES.loadTyped<BitmapFont>("pink/5.fnt")
 
-    val plainFont = RES.loadTyped<BitmapFont>("pink/5.fnt")
+    val plainFont = RES.loadTyped<BitmapFont>("pink/5.fnt").also { DSKIN.defaultFont = it }
+
+    val monoFont = RES.loadTyped<BitmapFont>("white-rabbit.fnt")
 
     val whiteTexture = Texture2D(0)
     val windowTexture = Texture2D(0)
@@ -33,16 +35,18 @@ object SKIN {
 
     val bg = Texture2D(0)
 
-    val label = LabelStyle(plainFont)
-
-    val kotmeTitleLabel = LabelStyle(kotmeTitleFont)
+    val kotmeTitleLabel = LabelStyle { font = kotmeTitleFont }
 
     val plainButton = TextButtonStyle().apply {
-        font = plainFont
         downFontColor = Color.CYAN
     }
 
     val cell = Texture2D(0)
+
+    val blackLabel = LabelStyle {
+        font = plainFont
+        fontColor = Color.BLACK
+    }
 
     init {
         setGreenTheme()
@@ -208,7 +212,6 @@ object SKIN {
         fontColor = Color.WHITE
         overFontColor = selectedColor
         downFontColor = downColor
-        font = BitmapFont.default()
     }
 
     val greyUnderline = NinePatchDrawable(NinePatch(textFieldTexture, 0, 0, 0, 1))
@@ -218,22 +221,20 @@ object SKIN {
         fontColor = Color.WHITE
         background = greyUnderline
         focusedBackground = brightUnderline
-        font = BitmapFont.default()
+        font = plainFont
     }
 
-    val errorsButton = TextButtonStyle().apply {
+    val errorsButton = TextButtonStyle {
         fontColor = Vec4(1f, 0f, 0f, 1f)
         overFontColor = overColor
         downFontColor = downColor
-        font = BitmapFont.default()
     }
 
-    val checkTextButton = TextButtonStyle().apply {
+    val checkTextButton = TextButtonStyle {
         fontColor = Color.WHITE
         overFontColor = overColor
         downFontColor = downColor
         checkedFontColor = checkedColor
-        font = BitmapFont.default()
     }
 
     val windowBackground = NinePatchDrawable(NinePatch(windowTexture, 0, 0, 1, 1))
@@ -244,6 +245,23 @@ object SKIN {
         sprite.color.set(0f, 0f, 0f, 0.8f)
         minWidth = 0f
         minHeight = 0f
+    }
+
+    val greenBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(0.5f, 1f, 0.5f, 0.8f)
+    }
+    val yellowBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(1f, 0.9f, 0.5f, 0.8f)
+    }
+    val darkYellowBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(0.8f, 0.6f, 0.3f, 0.8f)
+    }
+    val grayBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(0.5f, 0.5f, 0.5f, 0.8f)
+    }
+
+    val dialogBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(255f / 255f, 206f / 255f, 206f / 255f, 1f)
     }
 
     val titleBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
@@ -307,8 +325,6 @@ object SKIN {
         this.background = windowBackground
     }
 
-    val bgImage = SpriteDrawable(Sprite(bg))
-
     fun init() {
         val bg2 = TextureRegion(whiteTexture)
         listOver.sprite.setRegion(bg2)
@@ -318,7 +334,6 @@ object SKIN {
 
         whiteTexture.initOnePixelTexture(1f, 1f, 1f, 1f)
 
-        bg.load("bg.jpg")
         cell.load("cell.png", GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR)
     }
 }

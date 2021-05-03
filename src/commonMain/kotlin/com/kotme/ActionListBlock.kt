@@ -21,7 +21,9 @@ class ActionListBlock: ActionBlockAdapter() {
     val blocks = ArrayList<Actor>()
 
     init {
-        background = SKIN.listBlockBackground
+        background = SKIN.grayBackground
+        title.style = DSKIN.label
+
         content.align = Align.topLeft
 
         title.textProvider = { actionList.context?.name ?: "Список" }

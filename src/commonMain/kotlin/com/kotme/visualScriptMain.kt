@@ -5,10 +5,12 @@ import app.thelema.anim.AnimationPlayer
 import app.thelema.app.APP
 import app.thelema.fs.FS
 import app.thelema.audio.AL
+import app.thelema.audio.ISound
 import app.thelema.ecs.ECS
 import app.thelema.ecs.Entity
 import app.thelema.ecs.component
 import app.thelema.ecs.getComponentOrNull
+import app.thelema.g2d.Sprite
 import app.thelema.g3d.Blending
 import app.thelema.g3d.Material
 import app.thelema.g3d.Object3D
@@ -20,12 +22,21 @@ import app.thelema.g3d.node.TransformNode
 import app.thelema.gl.GL
 import app.thelema.gltf.GLTF
 import app.thelema.gltf.GLTFAnimation
+import app.thelema.img.Texture2D
 import app.thelema.math.Vec3
+import app.thelema.math.Vec4
 import app.thelema.phys.PhysicsContext
 import app.thelema.res.RES
 import app.thelema.shader.Shader
+import app.thelema.shader.SimpleShader3D
 import app.thelema.ui.*
 import app.thelema.utils.Color
+import kotlin.random.Random
+
+val mainScene = Entity("Main") {
+    component<Scene>()
+    component<ActionList>()
+}
 
 const val LEFT_RAD = 3.141592653589793f * 0.5f
 const val RIGHT_RAD = -3.141592653589793f * 0.5f
@@ -37,8 +48,55 @@ const val CELLS_NUM = 5
 const val GRID_SIZE = CELL_SIZE * CELLS_NUM
 const val GRID_SIZE_HALF = CELL_SIZE_HALF * CELLS_NUM
 
+val grid = Array(CELLS_NUM) {
+    Array(CELLS_NUM) {
+        '.'
+    }
+}
+var currentX = 0
+    set(value) {
+        field = value
+        checkGoalAchieved()
+    }
+var currentZ = 0
+    set(value) {
+        field = value
+        checkGoalAchieved()
+    }
+var stepX = 0
+var stepZ = 1
+
+var timer = 20f
+
+var state = 0
+
+const val KATE_NAME = "Кейт"
+
+var winSound: ISound? = null
+
+fun checkGoalAchieved() {
+    if (currentX == CELLS_NUM - 1 && currentZ == CELLS_NUM - 1 && state == 0) {
+        state = 1
+        mainScene.component<ActionList>().restart()
+        mainScene.component<ActionList>().isRunning = false
+
+        winSound?.play()
+
+        mainScene.entity(KATE_NAME) {
+            val player = component<AnimationPlayer>()
+            val characterContext = component<CharacterContext>()
+            player.animate(characterContext.clappingAnim!!, 0.5f, loopCount = 3)
+            player.queue(characterContext.idleAnim!!, 0.5f)
+        }
+    }
+}
+
 fun visualScriptMain() {
     SKIN.init()
+
+    ECS.descriptor({ CharacterContext() }) {}
+    ECS.descriptor({ StepForwardAction() }) {}
+    ECS.descriptor({ TurnAction() }) {}
 
     val cameraDistance = 4f
     val cameraOffset = Vec3(-cameraDistance, cameraDistance, -cameraDistance)
@@ -50,44 +108,42 @@ fun visualScriptMain() {
         updateCamera()
     }
 
-    val mainScene = Entity("Main") {
-        component<Scene>()
-        component<ActionList>()
-
-        entity("Light").apply {
-            component<TransformNode> {
-                rotation.setQuaternionByAxis(1f, 0f, 0f, 0.5f)
-                requestTransformUpdate()
-            }
-            component<DirectionalLight> {
-                color.set(1f, 0.7f, 0.3f)
-                lightPositionOffset = 50f
-                lightIntensity = 3f
-                setupShadowMaps()
-                isShadowEnabled = true
-            }
+    mainScene.entity("Light") {
+        component<TransformNode> {
+            rotation.setQuaternionByAxis(1f, 0f, 0f, 0.5f)
+            requestTransformUpdate()
+        }
+        component<DirectionalLight> {
+            color.set(1f, 0.7f, 0.3f)
+            lightPositionOffset = 50f
+            lightIntensity = 3f
+            setupShadowMaps()
+            isShadowEnabled = true
         }
     }
 
     val stepSound = AL.newSound(FS.internal("step.ogg"))
 
-    RES.loadTyped<GLTF>("a_y.glb") {
+    winSound = AL.newSound(FS.internal("win.ogg"))
+
+    RES.loadTyped<GLTF>("a_y_all_anim_3.glb") {
         conf.separateThread = true
         conf.receiveShadows = true
         onLoaded {
             scene?.also { scene ->
                 mainScene.addEntity(scene.getOrCreateEntity().copyDeep().apply {
-                    name = "Кейт"
+                    name = KATE_NAME
 
                     val kate = this
 
                     component<AnimationPlayer> {
                         animate((animations.first { it.name == "idle" } as GLTFAnimation).animation, 0.1f, loopCount = -1)
                     }
-
                     component<PhysicsContext> {
                         linearVelocity = 2.5f
                         angularVelocity = 2f
+                    }
+                    component<CharacterContext> {
                         moveAnim = (animations.first { it.name == "walk" } as GLTFAnimation).animation.apply {
                             actionTrack.add(0.4f) {
                                 stepSound.play(0.3f)
@@ -97,14 +153,16 @@ fun visualScriptMain() {
                             }
                         }
                         idleAnim = (animations.first { it.name == "idle" } as GLTFAnimation).animation
-                        rotateAnim = (animations.first { it.name == "turn_r" } as GLTFAnimation).animation
+                        turnRAnim = (animations.first { it.name == "turn_r" } as GLTFAnimation).animation
+                        angryAnim = (animations.first { it.name == "angry" } as GLTFAnimation).animation
+                        turnLAnim = (animations.first { it.name == "turn_l" } as GLTFAnimation).animation
+                        clappingAnim = (animations.first { it.name == "clapping" } as GLTFAnimation).animation
                     }
-
-                    mainScene.component<ActionList> { this.context = kate }
-
                     component<TransformNode> {
                         position.set(CELL_SIZE_HALF, 0f, CELL_SIZE_HALF)
                     }
+
+                    mainScene.component<ActionList> { this.context = kate }
                 })
             }
         }
@@ -152,15 +210,24 @@ fun visualScriptMain() {
         conf.receiveShadows = true
         onLoaded {
             scene?.also { scene ->
-                mainScene.addEntity(scene.getOrCreateEntity().copyDeep().apply {
-                    name = "rocks"
+                val rand = Random(7)
+                for (i in 0 until 10) {
+                    val x = rand.nextInt(0, CELLS_NUM)
+                    val z = rand.nextInt(0, CELLS_NUM)
+                    if (grid[x][z] != '#') {
+                        grid[x][z] = '#'
 
-                    component<TransformNode> {
-                        scale.set(0.25f, 0.25f, 0.25f)
-                        position.set(CELL_SIZE_HALF + CELL_SIZE * 3, 0f, CELL_SIZE_HALF + CELL_SIZE * 2)
-                        requestTransformUpdate()
+                        mainScene.addEntityWithCorrectedName(scene.getOrCreateEntity().copyDeep().apply {
+                            name = "rocks"
+
+                            component<TransformNode> {
+                                scale.set(0.25f, 0.25f, 0.25f)
+                                position.set(CELL_SIZE_HALF + CELL_SIZE * x, 0f, CELL_SIZE_HALF + CELL_SIZE * z)
+                                requestTransformUpdate()
+                            }
+                        })
                     }
-                })
+                }
             }
         }
     }
@@ -175,14 +242,24 @@ fun visualScriptMain() {
         vsPanel.execute()
     }
 
+    val timerLabel = Label("00:00", LabelStyle { font = SKIN.monoFont })
+
     val titlePanel = HBox {
         align = Align.left
         add(Label("KOTme", SKIN.kotmeTitleLabel)).pad(10f)
         add(restartButton).pad(10f)
-    }
+        add(Actor()).growX()
 
-    val dialogPanel = HBox {
-
+        val icon = Texture2D().load("gear.png")
+        add(Button(ButtonStyle().apply {
+            up = TextureRegionDrawable(icon)
+            over = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 0f, 1f) })
+            down = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 1f, 1f) })
+        }) {
+            addAction {
+                println("menu")
+            }
+        }).pad(10f)
     }
 
     val split = MultiSplitPane(false)
@@ -204,17 +281,84 @@ fun visualScriptMain() {
     )
     split.setSplit(0, 0.4f)
 
+    val dialogLabel = Label("""
+Кажется нас немного отбросило от места падения.
+Моя встроенная система навигации кажется накрылась.
+Ты поможешь мне добраться до коробля?
+Соедени блоки в нужном порядке, чтобы можно было дойти до места крушения.
+""".trimIndent())
+    dialogLabel.style = LabelStyle {
+        fontColor.set(0f, 0f, 0f, 1f)
+        background = SKIN.dialogBackground
+    }
+    dialogLabel.setWrap(true)
+    dialogLabel.alignH = 0
+    dialogLabel.alignV = 0
+    dialogLabel.invalidate()
+
+    val dialogAvatar = UIImage(TextureRegionDrawable(Texture2D().load("icon_yellow 1.png")))
+    dialogAvatar.scaling = Scaling.fit
+    dialogAvatar.touchable = Touchable.Disabled
+
+    val dialogSplit = MultiSplitPane(true)
+    dialogSplit.touchable = Touchable.ChildrenOnly
+    dialogSplit.setWidgets(
+        Actor().apply { touchable = Touchable.Disabled },
+        Stack {
+            add(UIImage {
+                scaling = Scaling.fillX
+                drawable = TextureRegionDrawable(Texture2D().load("bg-bottom.png"))
+                alignV = -1
+            })
+            add(HBox {
+                touchable = Touchable.ChildrenOnly
+                add(Stack {
+                    add(dialogLabel)
+                    add(Table {
+                        align = Align.bottomRight
+                        add(TextButton(">> Далее >>") {
+                            addAction { dialogSplit.setSplit(0, 1f) }
+                        }).pad(10f)
+                    })
+                }).grow().pad(10f).height(130f).align(Align.bottom)
+                add(dialogAvatar).width(200f).height(200f)
+            })
+        }
+    )
+    dialogSplit.setSplit(0, 1f)
+
+    val bottomPanel = HBox {
+        add(timerLabel).pad(10f)
+
+        add(Actor()).grow()
+
+        val icon = Texture2D().load("chat.png")
+        add(Button(ButtonStyle().apply {
+            up = TextureRegionDrawable(icon)
+            over = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 0f, 1f) })
+            down = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 1f, 1f) })
+        }) {
+            addAction {
+                dialogSplit.setSplit(0, 0f)
+            }
+        }).pad(10f)
+    }
+
     val mainPanel = MainPanel()
-    val root = Table().apply {
+    val root = Table {
         fillParent = true
 
-        add(VBox {
-            add(Stack {
-                add(UIImage(SKIN.bgImage, scaling = Scaling.fill).apply { fillParent = true })
-                add(titlePanel)
-            }).growX()
-            add(split).grow()
-            add(dialogPanel).growX()
+        add(Stack {
+            add(VBox {
+                add(titlePanel).growX()
+                add(split).grow()
+                add(bottomPanel).growX()
+            })
+            add(VBox {
+                touchable = Touchable.ChildrenOnly
+                add(Actor().apply { touchable = Touchable.Disabled }).grow()
+                add(dialogSplit).growX().height(200f)
+            })
         }).grow()
     }
     mainPanel.stage.addActor(root)
@@ -222,13 +366,21 @@ fun visualScriptMain() {
     APP.onUpdate = { delta ->
         ECS.update(mainScene, delta)
 
-        mainScene.getEntityByName("Кейт")?.getComponentOrNull<TransformNode>()?.worldMatrix?.getTranslation(ActiveCamera.position)?.also {
+        if (timer > 0) {
+            timer -= delta
+            if (timer < 0f) timer = 0f
+            val minutes = ((timer / 60).toInt() % 59).toString().padStart(2, '0')
+            val seconds = (timer.toInt() % 59).toString().padStart(2, '0')
+            timerLabel.text = "$minutes:$seconds"
+        }
+
+        mainScene.getEntityByName(KATE_NAME)?.getComponentOrNull<TransformNode>()?.worldMatrix?.getTranslation(ActiveCamera.position)?.also {
             it += cameraOffset
         }
 
         ActiveCamera.updateCamera()
 
-        mainPanel.stage.act(delta)
+        mainPanel.stage.update(delta)
     }
 
     val sky = Sky()
@@ -274,6 +426,25 @@ void main() {
             updateMesh()
 
             builder.position.set(GRID_SIZE_HALF, 0.05f, GRID_SIZE_HALF)
+            builder.applyTransform()
+        }
+        component<Object3D>()
+    }
+
+    mainScene.entity("goal").apply {
+        component<Material> {
+            shader = SimpleShader3D {
+                color = Vec4(Color.GOLD).apply { a = 0.5f }
+            }
+            alphaMode = Blending.BLEND
+        }
+        component<Object3D> {}
+        component<PlaneMesh> {
+            width = CELL_SIZE
+            height = CELL_SIZE
+            updateMesh()
+
+            builder.position.set(GRID_SIZE - CELL_SIZE_HALF, 0.1f, GRID_SIZE - CELL_SIZE_HALF)
             builder.applyTransform()
         }
         component<Object3D>()
