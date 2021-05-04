@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="16">
+      <module name="kotme-vs.commonMain" target="1.8" />
+      <module name="kotme-vs.commonTest" target="1.8" />
+      <module name="kotme-vs.jvmMain" target="1.8" />
+      <module name="kotme-vs.jvmTest" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

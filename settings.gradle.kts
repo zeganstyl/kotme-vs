@@ -1,7 +1,6 @@
 pluginManagement {
     repositories {
         google()
-        jcenter()
         gradlePluginPortal()
         mavenCentral()
     }
@@ -13,5 +12,4 @@ pluginManagement {
         }
     }
 }
-rootProject.name = "kotme-vs"
-
+rootProject.name = "kotme"

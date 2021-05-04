@@ -6,10 +6,7 @@ import app.thelema.app.APP
 import app.thelema.fs.FS
 import app.thelema.audio.AL
 import app.thelema.audio.ISound
-import app.thelema.ecs.ECS
-import app.thelema.ecs.Entity
-import app.thelema.ecs.component
-import app.thelema.ecs.getComponentOrNull
+import app.thelema.ecs.*
 import app.thelema.g2d.Sprite
 import app.thelema.g3d.Blending
 import app.thelema.g3d.Material
@@ -33,10 +30,7 @@ import app.thelema.ui.*
 import app.thelema.utils.Color
 import kotlin.random.Random
 
-val mainScene = Entity("Main") {
-    component<Scene>()
-    component<ActionList>()
-}
+lateinit var mainScene: IEntity
 
 const val LEFT_RAD = 3.141592653589793f * 0.5f
 const val RIGHT_RAD = -3.141592653589793f * 0.5f
@@ -92,6 +86,11 @@ fun checkGoalAchieved() {
 }
 
 fun visualScriptMain() {
+    mainScene = Entity("Main") {
+        component<Scene>()
+        component<ActionList>()
+    }
+
     SKIN.init()
 
     ECS.descriptor({ CharacterContext() }) {}
@@ -117,8 +116,8 @@ fun visualScriptMain() {
             color.set(1f, 0.7f, 0.3f)
             lightPositionOffset = 50f
             lightIntensity = 3f
-            setupShadowMaps()
-            isShadowEnabled = true
+            //setupShadowMaps()
+            //isShadowEnabled = true
         }
     }
 
@@ -200,10 +199,10 @@ fun visualScriptMain() {
         }
     }
 
-    AL.newMusic(FS.internal("bg2.ogg")).apply {
-        volume = 0.3f
-        play()
-    }
+//    AL.newMusic(FS.internal("bg2.ogg")).apply {
+//        volume = 0.3f
+//        play()
+//    }
 
     RES.loadTyped<GLTF>("rocks.glb") {
         conf.separateThread = true
@@ -269,7 +268,7 @@ fun visualScriptMain() {
     expandScriptButton.addAction {
         split.setSplit(0, if (split.splits[0] > 0f) 0f else 0.4f)
         split.invalidateHierarchy()
-        expandScriptButton.text = if (expandScriptButton.text == ">>") "<<" else ">>"
+        expandScriptButton.text = if (split.splits[0] > 0f) "<<" else ">>"
     }
 
     split.setWidgets(
@@ -280,6 +279,7 @@ fun visualScriptMain() {
         }
     )
     split.setSplit(0, 0.4f)
+    split.invalidateHierarchy()
 
     val dialogLabel = Label("""
 Кажется нас немного отбросило от места падения.
@@ -344,24 +344,26 @@ fun visualScriptMain() {
         }).pad(10f)
     }
 
-    val mainPanel = MainPanel()
-    val root = Table {
-        fillParent = true
-
-        add(Stack {
-            add(VBox {
-                add(titlePanel).growX()
-                add(split).grow()
-                add(bottomPanel).growX()
-            })
-            add(VBox {
-                touchable = Touchable.ChildrenOnly
-                add(Actor().apply { touchable = Touchable.Disabled }).grow()
-                add(dialogSplit).growX().height(200f)
-            })
-        }).grow()
+    val hud = VBox {
+        add(titlePanel).growX()
+        add(split).grow()
+        add(bottomPanel).growX()
     }
-    mainPanel.stage.addActor(root)
+
+    val dialogPanel = VBox {
+        touchable = Touchable.ChildrenOnly
+        add(Actor().apply { touchable = Touchable.Disabled }).grow()
+        add(dialogSplit).growX().height(200f)
+    }
+
+    val mainStack = Stack {
+        fillParent = true
+        add(hud)
+        add(dialogPanel)
+    }
+
+    val mainPanel = MainPanel()
+    mainPanel.stage.addActor(mainStack)
 
     APP.onUpdate = { delta ->
         ECS.update(mainScene, delta)
@@ -451,6 +453,13 @@ void main() {
     }
 
     APP.onRender = {
+        println("mainStack: ${mainStack.globalPosition.x}, ${mainStack.globalPosition.y}")
+        println("hud: ${hud.globalPosition.x}, ${hud.globalPosition.y}")
+        println("dialogPanel: ${dialogPanel.globalPosition.x}, ${dialogPanel.globalPosition.y}")
+        println("split: ${split.globalPosition.x}, ${split.globalPosition.y}")
+
+        println("stage: ${mainPanel.stage.root.globalPosition.x}, ${mainPanel.stage.root.globalPosition.y}")
+
         sky.render()
         ECS.render(mainScene)
 
