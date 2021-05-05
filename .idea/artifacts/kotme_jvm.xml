@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="kotme-jvm">
-    <output-path>C:\Users\1\IdeaProjects\kotme-vs\build\libs</output-path>
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
     <root id="archive" name="kotme-jvm.jar">
       <element id="module-output" name="kotme.jvmMain" />
     </root>

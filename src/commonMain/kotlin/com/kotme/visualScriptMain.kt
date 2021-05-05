@@ -125,7 +125,7 @@ fun visualScriptMain() {
 
     winSound = AL.newSound(FS.internal("win.ogg"))
 
-    RES.loadTyped<GLTF>("a_y_all_anim_3.glb") {
+    RES.loadTyped<GLTF>("kate.glb") {
         conf.separateThread = true
         conf.receiveShadows = true
         onLoaded {
@@ -199,10 +199,10 @@ fun visualScriptMain() {
         }
     }
 
-//    AL.newMusic(FS.internal("bg2.ogg")).apply {
-//        volume = 0.3f
-//        play()
-//    }
+    AL.newMusic(FS.internal("bg2.ogg")).apply {
+        volume = 0.3f
+        play()
+    }
 
     RES.loadTyped<GLTF>("rocks.glb") {
         conf.separateThread = true
@@ -247,13 +247,14 @@ fun visualScriptMain() {
         align = Align.left
         add(Label("KOTme", SKIN.kotmeTitleLabel)).pad(10f)
         add(restartButton).pad(10f)
-        add(Actor()).growX()
+        add(Widget()).growX()
 
-        val icon = Texture2D().load("gear.png")
         add(Button(ButtonStyle().apply {
-            up = TextureRegionDrawable(icon)
-            over = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 0f, 1f) })
-            down = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 1f, 1f) })
+            Texture2D().load("gear.png") {
+                up = TextureRegionDrawable(this)
+                over = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 0f, 1f) })
+                down = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 1f, 1f) })
+            }
         }) {
             addAction {
                 println("menu")
@@ -296,7 +297,9 @@ fun visualScriptMain() {
     dialogLabel.alignV = 0
     dialogLabel.invalidate()
 
-    val dialogAvatar = UIImage(TextureRegionDrawable(Texture2D().load("icon_yellow 1.png")))
+    val dialogAvatar = UIImage().apply {
+        Texture2D().load("icon_yellow 1.png") { drawable = TextureRegionDrawable(this) }
+    }
     dialogAvatar.scaling = Scaling.fit
     dialogAvatar.touchable = Touchable.Disabled
 
@@ -307,7 +310,9 @@ fun visualScriptMain() {
         Stack {
             add(UIImage {
                 scaling = Scaling.fillX
-                drawable = TextureRegionDrawable(Texture2D().load("bg-bottom.png"))
+                Texture2D().load("bg-bottom.png") {
+                    drawable = TextureRegionDrawable(this)
+                }
                 alignV = -1
             })
             add(HBox {
@@ -330,13 +335,14 @@ fun visualScriptMain() {
     val bottomPanel = HBox {
         add(timerLabel).pad(10f)
 
-        add(Actor()).grow()
+        add(Widget()).grow()
 
-        val icon = Texture2D().load("chat.png")
         add(Button(ButtonStyle().apply {
-            up = TextureRegionDrawable(icon)
-            over = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 0f, 1f) })
-            down = SpriteDrawable(Sprite(icon).apply { color.set(0f, 1f, 1f, 1f) })
+            Texture2D().load("chat.png") {
+                up = TextureRegionDrawable(this)
+                over = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 0f, 1f) })
+                down = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 1f, 1f) })
+            }
         }) {
             addAction {
                 dialogSplit.setSplit(0, 0f)
@@ -453,13 +459,6 @@ void main() {
     }
 
     APP.onRender = {
-        println("mainStack: ${mainStack.globalPosition.x}, ${mainStack.globalPosition.y}")
-        println("hud: ${hud.globalPosition.x}, ${hud.globalPosition.y}")
-        println("dialogPanel: ${dialogPanel.globalPosition.x}, ${dialogPanel.globalPosition.y}")
-        println("split: ${split.globalPosition.x}, ${split.globalPosition.y}")
-
-        println("stage: ${mainPanel.stage.root.globalPosition.x}, ${mainPanel.stage.root.globalPosition.y}")
-
         sky.render()
         ECS.render(mainScene)
 

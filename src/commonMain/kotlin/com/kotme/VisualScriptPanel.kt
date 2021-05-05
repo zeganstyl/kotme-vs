@@ -35,11 +35,6 @@ class VisualScriptPanel(): Table() {
         templates.add(ComponentBlockTemplate(this) { RotateRightActionBlock() })
     }
 
-    override fun act(delta: Float) {
-        super.act(delta)
-        println("${globalPosition.x}, ${globalPosition.y}")
-    }
-
     fun execute() {
         diagram.rootAction?.getComponentOrNullTyped<IAction>(ECS.Action)?.restart()
     }
