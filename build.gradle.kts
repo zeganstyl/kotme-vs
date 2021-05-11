@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.konan.file.File.Companion.javaHome
-
 plugins {
     kotlin("multiplatform") version "1.5.0"
     //id("com.android.application")
@@ -34,6 +32,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("app.thelema:thelema:0.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-RC")
             }
         }
 

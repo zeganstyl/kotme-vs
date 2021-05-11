@@ -12,7 +12,9 @@ fun main() {
         startApp.addEventListener("click", {
             val app = JsApp(document.getElementById("canvas") as HTMLCanvasElement)
 
-            visualScriptMain()
+            Common.init()
+
+            Movie.init()
 
             app.startLoop()
         })

@@ -1,5 +1,6 @@
 package com.kotme
 
+import app.thelema.audio.AL
 import app.thelema.data.DATA
 import app.thelema.fs.FS
 import app.thelema.font.BitmapFont
@@ -36,10 +37,6 @@ object SKIN {
     val bg = Texture2D(0)
 
     val kotmeTitleLabel = LabelStyle { font = kotmeTitleFont }
-
-    val plainButton = TextButtonStyle().apply {
-        downFontColor = Color.CYAN
-    }
 
     val cell = Texture2D(0)
 
@@ -224,9 +221,9 @@ object SKIN {
         font = plainFont
     }
 
-    val errorsButton = TextButtonStyle {
-        fontColor = Vec4(1f, 0f, 0f, 1f)
-        overFontColor = overColor
+    val closeButton = TextButtonStyle {
+        fontColor = Vec4(0f, 0f, 0f, 1f)
+        overFontColor = Vec4(1f, 0f, 0f, 1f)
         downFontColor = downColor
     }
 
@@ -247,17 +244,58 @@ object SKIN {
         minHeight = 0f
     }
 
-    val greenBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
-        sprite.color.set(0.5f, 1f, 0.5f, 0.8f)
+    val background150H = SpriteDrawable(Sprite(whiteTexture)).apply {
+        sprite.color.set(0f, 0f, 0f, 0.9f)
+        minWidth = 0f
+        minHeight = 150f
     }
-    val yellowBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
-        sprite.color.set(1f, 0.9f, 0.5f, 0.8f)
+
+    val greenActionButton = TextButtonStyle {
+        up = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.5f, 1f, 0.5f, 0.8f)
+        }
+        over = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.7f, 1f, 0.7f, 1f)
+        }
+        fontColor = Color.BLACK
+        overFontColor = Color.BLACK
+        downFontColor = Color.BLACK
     }
-    val darkYellowBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
-        sprite.color.set(0.8f, 0.6f, 0.3f, 0.8f)
+
+    val yellowActionButton = TextButtonStyle {
+        up = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(1f, 0.9f, 0.5f, 0.8f)
+        }
+        over = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(1f, 0.9f, 0.7f, 1f)
+        }
+        fontColor = Color.BLACK
+        overFontColor = Color.BLACK
+        downFontColor = Color.BLACK
     }
-    val grayBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
-        sprite.color.set(0.5f, 0.5f, 0.5f, 0.8f)
+
+    val darkYellowActionButton = TextButtonStyle {
+        up = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.8f, 0.6f, 0.3f, 0.8f)
+        }
+        over = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.9f, 0.7f, 0.5f, 1f)
+        }
+        fontColor = Color.BLACK
+        overFontColor = Color.BLACK
+        downFontColor = Color.BLACK
+    }
+
+    val grayActionButton = TextButtonStyle {
+        up = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.55f, 0.55f, 0.55f, 0.8f)
+        }
+        over = SpriteDrawable(Sprite(whiteTexture)).apply {
+            sprite.color.set(0.6f, 0.6f, 0.6f, 1f)
+        }
+        fontColor = Color.BLACK
+        overFontColor = Color.BLACK
+        downFontColor = Color.BLACK
     }
 
     val dialogBackground = SpriteDrawable(Sprite(whiteTexture)).apply {
@@ -325,6 +363,20 @@ object SKIN {
         this.background = windowBackground
     }
 
+    val dialogLabel = LabelStyle {
+        fontColor.set(0f, 0f, 0f, 1f)
+        background = SKIN.dialogBackground
+    }
+
+    val gearButton = ButtonStyle()
+
+    val chatButton = ButtonStyle()
+
+    val loadProgress = ProgressBarStyle().apply {
+        background = DSKIN.solidFrame
+        knobBefore = DSKIN.white5x5
+    }
+
     fun init() {
         val bg2 = TextureRegion(whiteTexture)
         listOver.sprite.setRegion(bg2)
@@ -335,5 +387,21 @@ object SKIN {
         whiteTexture.initOnePixelTexture(1f, 1f, 1f, 1f)
 
         cell.load("cell.png", GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR)
+
+        DSKIN.textButton.clickSound = AL.newSound(FS.internal("beep.ogg"))
+
+        gearButton.clickSound = DSKIN.textButton.clickSound
+        Texture2D().load("gear.png") {
+            gearButton.up = TextureRegionDrawable(this)
+            gearButton.over = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 0f, 1f) })
+            gearButton.down = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 1f, 1f) })
+        }
+
+        chatButton.clickSound = DSKIN.textButton.clickSound
+        Texture2D().load("chat.png") {
+            chatButton.up = TextureRegionDrawable(this)
+            chatButton.over = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 0f, 1f) })
+            chatButton.down = SpriteDrawable(Sprite(this).apply { color.set(0f, 1f, 1f, 1f) })
+        }
     }
 }

@@ -13,6 +13,8 @@ class Sky {
         node.updateTransform()
         color.set(1f, 0.9f, 0.7f)
     }
+
+    var isEnabled = true
     
     val sunPos = Vec3()
 
@@ -63,16 +65,18 @@ void main () {
     }
 
     fun render() {
-        skyShader.bind()
-        skyShader["viewProj"] = ActiveCamera.viewProjectionMatrix
-        skyShader["camFar"] = ActiveCamera.far
-        skyShader["camPos"] = ActiveCamera.position
+        if (isEnabled) {
+            skyShader.bind()
+            skyShader["viewProj"] = ActiveCamera.viewProjectionMatrix
+            skyShader["camFar"] = ActiveCamera.far
+            skyShader["camPos"] = ActiveCamera.position
 
-        sunPos.set(light.direction).scl(-1f)
-        skyShader["uSunPosition"] = sunPos
-        skyShader["uSunColor"] = light.color
+            sunPos.set(light.direction).scl(-1f)
+            skyShader["uSunPosition"] = sunPos
+            skyShader["uSunColor"] = light.color
 
-        skybox.mesh.render(skyShader)
-        GL.glClear(GL_DEPTH_BUFFER_BIT)
+            skybox.mesh.render(skyShader)
+            GL.glClear(GL_DEPTH_BUFFER_BIT)
+        }
     }
 }

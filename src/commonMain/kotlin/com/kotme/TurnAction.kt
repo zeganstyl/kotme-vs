@@ -9,7 +9,9 @@ import app.thelema.math.Vec2
 import app.thelema.phys.PhysicsContext
 import kotlin.math.abs
 
-open class TurnAction: ActionAdapter() {
+open class TurnAction(): ActionAdapter() {
+    constructor(angle: Float): this() { angleLength = angle }
+
     override val componentName: String
         get() = "TurnAction"
 
@@ -40,14 +42,7 @@ open class TurnAction: ActionAdapter() {
                     passed += diff
                     isRunning = false
 
-                    val x = stepX
-                    if (angleLength >= 0) {
-                        stepX = stepZ
-                        stepZ = -x
-                    } else {
-                        stepX = -stepZ
-                        stepZ = x
-                    }
+                    Scene1.rotateStepDirection(angleLength)
                 } else {
                     node.rotation.setQuaternionByAxis(0f, 1f, 0f, node.rotation.getQuaternionAngleAround(0f, 1f, 0f) + speed)
                     passed += speed

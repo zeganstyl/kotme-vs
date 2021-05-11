@@ -1,18 +1,12 @@
 package com.kotme
 
 import app.thelema.action.ActionList
-import app.thelema.action.IAction
 import app.thelema.ui.*
 
-class ActionListBlock: ActionBlockAdapter() {
+class ActionListBlock: ActionBlock<ActionList>("Список", SKIN.grayActionButton, ActionList()) {
     var currentSocket = ActionBlockSocket()
 
-    var actionList: ActionList = ActionList()
-
-    override val action: IAction
-        get() = actionList
-
-    val content = Table()
+    val listContent = VerticalGroup()
 
     val contextChooseButton = TextButton("...")
 
@@ -21,58 +15,61 @@ class ActionListBlock: ActionBlockAdapter() {
     val blocks = ArrayList<Actor>()
 
     init {
-        background = SKIN.grayBackground
-        title.style = DSKIN.label
-
-        content.align = Align.topLeft
-
-        title.textProvider = { actionList.context?.name ?: "Список" }
+        //listContent.align = Align.topLeft
 
         currentSocket.onDropped = {
             blocks.add(it)
             val block = it as IComponentBlock
-            block.visualScriptPanel = visualScriptPanel
             entity.addEntityWithCorrectedName(block.entity)
-            if (actionList.isParallel) {
-                content.add(it).pad(5f)
+            if (action.isParallel) {
+                listContent.addActor(it)
             } else {
-                content.add(it).growX().padTop(5f).padBottom(5f).newRow()
+                listContent.addActor(it)
             }
         }
 
         contextChooseButton.addAction {
-            visualScriptPanel.entityTreeWindow.apply {
+            VisualScriptPanel.entityTreeWindow.apply {
                 onAccept = {
-                    actionList.context = (tree.selectedNode as EntityTreeNode?)?.entity
+                    action.context = (tree.selectedNode as EntityTreeNode?)?.entity
                 }
             }
-            visualScriptPanel.entityTreeWindow.show(stage!!)
+            VisualScriptPanel.entityTreeWindow.show(stage!!)
         }
 
-        parallelButton.text = if (actionList.isParallel) "|||" else "|"
+        listContent.setExpand()
+        listContent.setFill()
+        listContent.space(10f)
+
+        parallelButton.text = if (action.isParallel) "|||" else "|"
         parallelButton.addAction {
-            actionList.isParallel = !actionList.isParallel
-            parallelButton.text = if (actionList.isParallel) "|||" else "|"
-            if (actionList.isParallel) {
-                content.clearChildren()
-                blocks.forEach {
-                    content.add(it).pad(5f)
-                }
+            action.isParallel = !action.isParallel
+            parallelButton.text = if (action.isParallel) "|||" else "|"
+            if (action.isParallel) {
+//                listContent.clearChildren()
+//                blocks.forEach {
+//                    listContent.addActor(it)
+//                }
             } else {
-                content.clearChildren()
-                blocks.forEach {
-                    content.add(it).growX().padTop(5f).padBottom(5f).newRow()
-                }
+//                listContent.clearChildren()
+//                blocks.forEach {
+//                    listContent.addActor(it)
+//                }
             }
         }
+
+        clearChildren()
+
+        label.textProvider = { action.context?.name ?: "Список" }
 
         add(HBox {
             if (parallelActionsEnabled) add(parallelButton).width(20f).padRight(5f)
-            add(title).growX().padRight(5f)
+            add(label).growX().padRight(5f)
             if (chooseEnabled) add(contextChooseButton).width(20f)
+            add(closeButton).padRight(5f)
         }).growX().pad(5f).newRow()
 
-        add(content).growX().setFillY().padLeft(20f).newRow()
+        add(listContent).growX().setFillY().padLeft(20f).newRow()
         add(currentSocket).grow().newRow()
     }
 

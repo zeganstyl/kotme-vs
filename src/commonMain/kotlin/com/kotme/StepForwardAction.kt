@@ -33,18 +33,17 @@ class StepForwardAction: ActionAdapter() {
             val physicsContext = getContextComponent<PhysicsContext>()
             val characterContext = getContextComponent<CharacterContext>()
             if (node != null && physicsContext != null) {
-                if (grid.getOrNull(currentX + stepX)?.getOrNull(currentZ + stepZ) == '.') {
+                if (Scene1.isNextCellEmpty()) {
                     node.rotation.rotateVec3(tmp.set(0f, 0f, 1f))
 
                     val speed = physicsContext.linearVelocity * delta
-                    val diff = length - passed
+                    val diff = Scene1.CELL_SIZE - passed
                     if (abs(diff) < speed) {
                         node.position.add(tmp.scl(diff))
                         passed += diff
                         isRunning = false
 
-                        currentX += stepX
-                        currentZ += stepZ
+                        Scene1.setNextCell()
                     } else {
                         node.position.add(tmp.scl(speed))
                         passed += speed
@@ -89,7 +88,6 @@ class StepForwardAction: ActionAdapter() {
     }
 
     companion object {
-        const val length: Float = CELL_SIZE
         const val animationTransition: Float = 0.1f
     }
 }

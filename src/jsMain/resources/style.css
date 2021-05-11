@@ -1,0 +1,239 @@
+body {
+	background: black;
+	overflow-x: hidden;
+}
+
+@import "compass/css3";
+@import url(https://fonts.googleapis.com/css?family=Share+Tech+Mono);
+text {
+	filter: url(#filter);
+	fill: #ffcdb8;
+	font-family: 'Share Tech Mono', sans-serif;
+	font-size: 50px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+svg {
+	width: 100%;
+	display: block;
+	position: relative;
+	overflow: hidden;
+}
+
+canvas {
+	display: block;
+	width: 1280px;
+	height: 720px;
+}
+
+.slider__item div {
+	height: 550px;
+}
+
+html {
+	overflow-x: hidden;
+}
+
+nav ul {
+	display: flex;
+	margin: 0;
+	flex-direction: row;
+	text-align: center;
+	align-items: center;
+	border-bottom: 1px solid gold;
+}
+
+#git {
+	border: 0px;
+	text-align: right;
+	width: 70%;
+}
+
+nav li {
+	opacity: 1;
+	list-style-type: none;
+	width: 100%;
+	border-right: 1px solid gold;
+}
+
+nav a {
+	font-size: 26px;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	background: linear-gradient(45deg, #ff03c9 33%, #ffeb3b 66%, #ffc107);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+nav a:hover {
+	font-size: 26px;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	background: linear-gradient( 45deg, #1ba3e4, #ffeb3b, #3aad2c);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.top {
+	background-color: black;
+	width: 100%;
+	position: fixed;
+	z-index: 99;
+}
+
+.begin {
+	background-image: url(fon1.jpg);
+	background-size: 100%;
+	padding: 10% 0 0;
+	border-bottom: 1px solid gold;
+}
+
+.solid {
+	background-color: #ffd400;
+	padding: 10px 16px;
+	color: black !important;
+	border: 2px #fff solid;
+	text-shadow: 0px 1px 0px black;
+}
+
+.solid:hover {
+	background-color: #b79908;
+	padding: 10px 16px;
+	border: 2px #fff solid;
+	color: white !important;
+}
+
+.f_1 {
+	display: flex;
+	padding: 3% 0.5% 0;
+	margin: 0;
+	text-align: center;
+	align-items: center;
+	width: 100%;
+}
+
+p {
+	color: white;
+	font-size: 50px;
+	font-weight: bold;
+	padding: 5% 5% 0px 5%;
+	margin: 0px 0px 2%;
+}
+
+.zag {
+	color: white;
+	font-size: 50px;
+	font-weight: bold;
+	padding: 5% 5% 0px 5%;
+	margin: 0px 0px 2%;
+}
+
+.dop_text {
+	font-weight: bold;
+	color: white;
+	font-size: 30px;
+	padding: 10px 7%;
+	text-shadow: 0px 1px 0px white;
+}
+
+.inside {
+	color: white;
+	font-size: 20px;
+	text-align: center;
+	background: black;
+	border: 10px double #ffd400;
+	border-radius: 1px;
+	margin: 20px;
+	padding: 20px;
+	width: 30%;
+}
+
+td {
+	cursor: pointer;
+}
+
+.inside b {
+	color: #ffd400;
+}
+
+.inside b:hover {
+	color: #b79908;
+}
+
+h5 {
+	text-align: center;
+}
+
+button {
+	background-color: #ffd400;
+	font-weight: bold;
+	padding: 10px 16px;
+	text-shadow: 0px 1px 0px black;
+	border: 2px #fff solid;
+	margin: 0 5%;
+	color: black;
+	font-size: 16px;
+}
+
+button:hover {
+	background-color: #b79908;
+	color: white;
+}
+
+footer {
+	background: black;
+}
+
+.content {
+	margin: 60px auto;
+	display: inline-block;
+}
+
+@media screen and (max-width: 1280px) {
+	nav {
+		display: flex;
+	}
+	#git {
+		border: 0px;
+		text-align: center !important;
+		width: 70%;
+	}
+	nav ul {
+		flex-direction: column !important;
+		display: flex;
+	}
+	.top {
+		flex: 25%;
+		position: relative !important;
+	}
+	nav li {
+		border: 0px solid black !important;
+		padding: 20px;
+	}
+	.begin {
+		flex: 75% !important;
+		text-align: end;
+	}
+	#home {
+		display: flex !important;
+	}
+	p, dop_text {
+		text-shadow: 4px 1px 2px #565656;
+	}
+	.slider__item div {
+		height: 450px !important;
+	}
+	.inside {
+		margin: 0 !important;
+	}
+	.f_1 {
+		flex-direction: column;
+	}
+	canvas {
+    	width: 100%;
+    	height: 100%;
+    }
+}

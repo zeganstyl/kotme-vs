@@ -12,7 +12,11 @@ fun main() {
         }
     )
 
-    visualScriptMain()
+    Common.init()
+
+    Movie.init()
+
+    //Scene2.init()
 
     app.startLoop()
 }

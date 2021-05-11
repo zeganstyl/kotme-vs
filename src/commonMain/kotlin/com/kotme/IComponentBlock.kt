@@ -10,7 +10,6 @@ interface IComponentBlock {
 
     val component: IEntityComponent
 
-    val selfActor: Actor
-
-    var visualScriptPanel: VisualScriptPanel
+    val panel: Actor
+        get() = this as Actor
 }

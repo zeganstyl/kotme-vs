@@ -7,7 +7,7 @@ import app.thelema.ecs.IEntityComponent
 
 class CharacterContext: IEntityComponent {
     override val componentName: String
-        get() = Name
+        get() = "CharacterContext"
 
     override var entityOrNull: IEntity? = null
 
@@ -17,8 +17,4 @@ class CharacterContext: IEntityComponent {
     var turnLAnim: IAnimation? = null
     var angryAnim: IAnimation? = null
     var clappingAnim: IAnimation? = null
-
-    companion object {
-        const val Name = "CharacterContext"
-    }
 }
