@@ -31,11 +31,12 @@ object Movie: CoroutineScope {
 
     val earth = Texture2D(0)
     val kx2000 = Texture2D(0)
+    val kx2000OpenEyes = Texture2D(0)
     val ship = Texture2D(0)
     val kateInShip = Texture2D(0)
     val kateInShipAlarm = Texture2D(0)
 
-    const val maxLoad = 14
+    const val maxLoad = 15
     var loadingProgress = 0
         set(value) {
             field = value
@@ -45,7 +46,7 @@ object Movie: CoroutineScope {
                 Talk.dialogLabel.style = DSKIN.label
                 Talk.backgroundImage.isVisible = false
                 Talk.blackBackground.isVisible = true
-                Talk.dialogLabel.text = "Мы освоили Землю"
+                Talk.dialogLabel.text = "Люди освоили Землю"
                 Talk.currentStep = 0
 
                 Common.hideLoading()
@@ -61,6 +62,7 @@ object Movie: CoroutineScope {
 
         earth.load("images/earth.png") { loadingProgress++ }
         kx2000.load("images/1.png") { loadingProgress++ }
+        kx2000OpenEyes.load("images/1-2.jpg") { loadingProgress++ }
         ship.load("images/ship.png") { loadingProgress++ }
         kateInShip.load("images/2.png") { loadingProgress++ }
         kateInShipAlarm.load("images/3.png") { loadingProgress++ }
@@ -118,10 +120,10 @@ object Movie: CoroutineScope {
             Common.backgroundImage.drawable = TextureRegionDrawable(kx2000)
             Talk.nextStep()
         }, {
+            Common.backgroundImage.drawable = TextureRegionDrawable(kx2000OpenEyes)
             Talk.dialogLabel.text = "Я робот модели KX-2000"
             Talk.nextStep()
         }, {
-            Common.backgroundImage.drawable = null
             Talk.dialogLabel.text = "Кодовое имя \"Кейт\""
             Talk.nextStep()
         }, {
