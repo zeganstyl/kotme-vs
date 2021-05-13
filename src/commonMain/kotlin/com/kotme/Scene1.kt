@@ -2,6 +2,7 @@ package com.kotme
 
 import app.thelema.action.ActionList
 import app.thelema.anim.AnimationPlayer
+import app.thelema.app.APP
 import app.thelema.audio.AL
 import app.thelema.ecs.ECS
 import app.thelema.ecs.Entity
@@ -17,11 +18,19 @@ import app.thelema.g3d.light.DirectionalLight
 import app.thelema.g3d.mesh.PlaneMesh
 import app.thelema.g3d.node.TransformNode
 import app.thelema.gl.GL
+import app.thelema.gl.GL_LINEAR
+import app.thelema.gl.GL_LINEAR_MIPMAP_LINEAR
 import app.thelema.gltf.GLTF
+import app.thelema.img.Texture2D
 import app.thelema.math.Vec4
 import app.thelema.res.RES
+import app.thelema.shader.ComplexPBRShader
 import app.thelema.shader.Shader
 import app.thelema.shader.SimpleShader3D
+import app.thelema.shader.node.GLSLType
+import app.thelema.shader.node.OperationNode
+import app.thelema.shader.node.ToneMapNode
+import app.thelema.ui.TextureRegionDrawable
 import app.thelema.utils.Color
 import kotlin.random.Random
 
@@ -53,6 +62,11 @@ object Scene1 {
     var stepX = 0
     var stepZ = 1
 
+    val groundColor = Texture2D(0)
+    val groundNormals = Texture2D(0)
+    val groundORM = Texture2D(0)
+    lateinit var groundShader: ComplexPBRShader
+
     fun rotateStepDirection(direction: Float) {
         val x = stepX
         if (direction >= 0) {
@@ -78,6 +92,10 @@ object Scene1 {
                 player.animate(characterContext.clappingAnim!!, 0.5f, loopCount = 3)
                 player.queue(characterContext.idleAnim!!, 0.5f)
             }
+
+            Talk.dialogLabel.text = "Мы справились!"
+            Talk.dialogAvatar.drawable = TextureRegionDrawable(Talk.avatar2)
+            Talk.show()
         }
     }
 
@@ -127,21 +145,8 @@ object Scene1 {
             }
         }
 
-        RES.loadTyped<GLTF>("mars-plane.glb") {
-            onLoaded {
-                scene?.also { scene ->
-                    mainScene.addEntity(scene.getOrCreateEntity().copyDeep().apply {
-                        component<TransformNode> {
-                            scale.set(2f, 1f, 2f)
-                            requestTransformUpdate()
-                        }
-                        name = "ground"
-                    })
-                }
-            }
-        }
-
         AL.newMusic(FS.internal("bg2.ogg")).apply {
+            isLooping = true
             play()
         }
 
@@ -167,6 +172,19 @@ object Scene1 {
                         }
                     }
                 }
+            }
+        }
+
+        mainScene.entity("ground") {
+            component<Object3D>()
+            component<Material> {
+                GL.call {
+                    shader = groundShader
+                }
+            }
+            component<PlaneMesh> {
+                setSize(500f)
+                updateMesh()
             }
         }
 

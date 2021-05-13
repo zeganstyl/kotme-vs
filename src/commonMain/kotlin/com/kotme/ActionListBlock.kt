@@ -31,7 +31,7 @@ class ActionListBlock: ActionBlock<ActionList>("Список", SKIN.grayActionBu
         contextChooseButton.addAction {
             VisualScriptPanel.entityTreeWindow.apply {
                 onAccept = {
-                    action.context = (tree.selectedNode as EntityTreeNode?)?.entity
+                    action.customContext = (tree.selectedNode as EntityTreeNode?)?.entity
                 }
             }
             VisualScriptPanel.entityTreeWindow.show(stage!!)
@@ -60,7 +60,7 @@ class ActionListBlock: ActionBlock<ActionList>("Список", SKIN.grayActionBu
 
         clearChildren()
 
-        label.textProvider = { action.context?.name ?: "Список" }
+        label.textProvider = { action.customContext?.name ?: "Список" }
 
         add(HBox {
             if (parallelActionsEnabled) add(parallelButton).width(20f).padRight(5f)

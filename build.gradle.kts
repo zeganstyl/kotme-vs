@@ -38,7 +38,7 @@ kotlin {
 
 //        val androidMain by getting {
 //            dependencies {
-//                implementation("app.thelema:thelema-engine-android-debug:0.6.0")
+//                implementation("app.thelema:thelema-android-debug:0.6.0")
 //            }
 //        }
 

@@ -7,6 +7,10 @@ object Talk {
     var steps: Array<() -> Unit> = emptyArray()
     var currentStep = 0
 
+    val avatar1 = Texture2D(0)
+    val avatar2 = Texture2D(0)
+    val bgImageTex = Texture2D(0)
+
     val dialogLabel = Label().apply {
         style = SKIN.dialogLabel
         setWrap(true)
@@ -22,9 +26,6 @@ object Talk {
 
     val backgroundImage = UIImage {
         scaling = Scaling.fillX
-        Texture2D().load("bg-bottom.png") {
-            drawable = TextureRegionDrawable(this)
-        }
         alignV = -1
     }
 

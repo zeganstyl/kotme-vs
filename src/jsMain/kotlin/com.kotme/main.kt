@@ -13,7 +13,6 @@ fun main() {
             val app = JsApp(document.getElementById("canvas") as HTMLCanvasElement)
 
             Common.init()
-
             Movie.init()
 
             app.startLoop()

@@ -13,7 +13,8 @@ class AndroidMain : Activity() {
         setContentView(app.view)
 
         GL.call {
-            visualScriptMain()
+            Common.init()
+            Movie.init()
         }
 
         app.startLoop()

@@ -2,10 +2,16 @@ package com.kotme
 
 import app.thelema.audio.AL
 import app.thelema.fs.FS
+import app.thelema.gl.GL_LINEAR
+import app.thelema.gl.GL_LINEAR_MIPMAP_LINEAR
 import app.thelema.gltf.GLTF
 import app.thelema.img.ITexture2D
 import app.thelema.img.Texture2D
 import app.thelema.res.RES
+import app.thelema.shader.ComplexPBRShader
+import app.thelema.shader.node.GLSLFloatInline
+import app.thelema.shader.node.GLSLType
+import app.thelema.shader.node.OperationNode
 import app.thelema.ui.DSKIN
 import app.thelema.ui.Scaling
 import app.thelema.ui.TextureRegionDrawable
@@ -29,7 +35,7 @@ object Movie: CoroutineScope {
     val kateInShip = Texture2D(0)
     val kateInShipAlarm = Texture2D(0)
 
-    const val maxLoad = 9
+    const val maxLoad = 14
     var loadingProgress = 0
         set(value) {
             field = value
@@ -58,14 +64,37 @@ object Movie: CoroutineScope {
         ship.load("images/ship.png") { loadingProgress++ }
         kateInShip.load("images/2.png") { loadingProgress++ }
         kateInShipAlarm.load("images/3.png") { loadingProgress++ }
+        Talk.bgImageTex.load("bg-bottom.png") {
+            Talk.backgroundImage.drawable = TextureRegionDrawable(Talk.bgImageTex)
+            loadingProgress++
+        }
+        Talk.avatar1.load("avatar/pose13.png") { loadingProgress++ }
+        Talk.avatar2.load("avatar/pose5.png") { loadingProgress++ }
+
+        Scene1.groundColor.load("ground/Ground031_1K_Color.jpg", minFilter = GL_LINEAR_MIPMAP_LINEAR, magFilter = GL_LINEAR) { loadingProgress++ }
+        Scene1.groundNormals.load("ground/Ground031_1K_Normal.jpg", minFilter = GL_LINEAR_MIPMAP_LINEAR, magFilter = GL_LINEAR) { loadingProgress++ }
+        Scene1.groundORM.load("ground/Ground031_1K_ORM.jpg", minFilter = GL_LINEAR_MIPMAP_LINEAR, magFilter = GL_LINEAR) { loadingProgress++ }
+
+        Scene1.groundShader = ComplexPBRShader {
+            val posUvOp = addNode(OperationNode(arrayListOf(vertexNode.position), "vec2(arg1.x * 0.1, arg1.z * 0.1)", GLSLType.Vec2))
+
+            colorTextureNode.uv = posUvOp.result
+            colorTextureNode.sRGB = true
+            normalTextureNode.uv = posUvOp.result
+            normalTextureNode.sRGB = true
+            normalMapNode.uv = posUvOp.result
+            metallicRoughnessTextureNode.uv = posUvOp.result
+            metallicRoughnessTextureNode.sRGB = true
+
+            outputNode.fadeStart = 0.7f
+
+            setColorTexture(Scene1.groundColor)
+            setNormalTexture(Scene1.groundNormals)
+            setMetallicRoughnessTexture(Scene1.groundORM)
+        }
 
         async {
             RES.loadTyped<GLTF>("ship.glb") {
-                conf.separateThread = true
-                onLoaded { loadingProgress++ }
-            }
-
-            RES.loadTyped<GLTF>("mars-plane.glb") {
                 conf.separateThread = true
                 onLoaded { loadingProgress++ }
             }
@@ -93,7 +122,7 @@ object Movie: CoroutineScope {
             Talk.nextStep()
         }, {
             Common.backgroundImage.drawable = null
-            Talk.dialogLabel.text = "Мое имя Кейт"
+            Talk.dialogLabel.text = "Кодовое имя \"Кейт\""
             Talk.nextStep()
         }, {
             Talk.dialogLabel.text = "Моя миссия исследовать Марс"
@@ -137,7 +166,7 @@ object Movie: CoroutineScope {
             Talk.blackBackground.isVisible = false
             Common.backgroundImage.drawable = null
             Talk.dialogLabel.style = SKIN.dialogLabel
-            Texture2D().load("avatar/pose13.png") { Talk.dialogAvatar.drawable = TextureRegionDrawable(this) }
+            Talk.dialogAvatar.drawable = TextureRegionDrawable(Talk.avatar1)
             Scene1.init()
         }
         )

@@ -10,7 +10,6 @@ import app.thelema.ecs.IEntity
 import app.thelema.ecs.component
 import app.thelema.ecs.getComponentOrNull
 import app.thelema.fs.FS
-import app.thelema.g2d.Sprite
 import app.thelema.g3d.cam.ActiveCamera
 import app.thelema.g3d.node.TransformNode
 import app.thelema.gltf.GLTF
@@ -24,9 +23,7 @@ import app.thelema.res.RES
 import app.thelema.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlin.coroutines.CoroutineContext
-import kotlin.random.Random
 
 object Common: CoroutineScope {
     val job = Job()
@@ -91,7 +88,7 @@ object Common: CoroutineScope {
 
         // bottom panel
         add(HBox {
-            add(timerLabel).pad(10f)
+            //add(timerLabel).pad(10f)
 
             add(Widget()).grow()
 
@@ -140,7 +137,7 @@ object Common: CoroutineScope {
                             position.set(Scene1.CELL_SIZE_HALF, 0f, Scene1.CELL_SIZE_HALF)
                         }
 
-                        sceneEntity.component<ActionList> { this.context = kate }
+                        sceneEntity.component<ActionList> { this.customContext = kate }
                     })
                 }
             }
